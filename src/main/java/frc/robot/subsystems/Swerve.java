@@ -45,6 +45,8 @@ public class Swerve extends SubsystemBase {
     ChassisSpeeds speeds = new ChassisSpeeds();
     public final Constants constants = new Constants();
 
+    private double characterizationInput = 0;
+
     public boolean active = true;
 
     public Swerve() {
@@ -190,6 +192,21 @@ public class Swerve extends SubsystemBase {
             modules[i].set((states[i].speedMetersPerSecond / Constants.MAX_VELOCITY) * .8,
                     states[i].angle.getRadians());
         }
+    }
+
+    public void runCharacterization(double input) {
+        for (Module module : modules) {
+            module.runCharacterization(0.0, characterizationInput);
+          }
+        characterizationInput = input;
+    }
+
+    public double getCharacterizationVelocity() {
+        double driveVelocityAverage = 0.0;
+        for (var module : modules) {
+            driveVelocityAverage += module.getCharacterizationVelocity();
+        }
+        return driveVelocityAverage / 4.0;
     }
 
     public ChassisSpeeds getSpeeds() {

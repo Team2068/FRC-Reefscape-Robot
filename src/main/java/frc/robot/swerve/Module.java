@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import frc.robot.swerve.ModuleIO.ModuleIOInputs;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -27,6 +28,9 @@ public class Module {
     public static final double DRIVE_REDUCTION = (15.0 / 32.0) * (10.0 / 60.0);
     public static final double STEER_REDUCTION = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
     public static final double DRIVE_CONVERSION_FACTOR = Math.PI * WHEEL_DIAMETER * DRIVE_REDUCTION;
+
+    public final ModuleIOInputs inputs = new ModuleIOInputs();
+    public ModuleIO io;
 
     public Module(ShuffleboardLayout tab, int driveID, int steerID, int encoderID, boolean comp) {
         drive = new TalonFX(driveID, "rio");
@@ -50,8 +54,8 @@ public class Module {
                 // .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .pid(0.2, 0.0, 0.0);
 
-                steerConfig.signals.primaryEncoderPositionAlwaysOn(false);
-                steerConfig.signals.primaryEncoderPositionPeriodMs(20);
+        steerConfig.signals.primaryEncoderPositionAlwaysOn(false);
+        steerConfig.signals.primaryEncoderPositionPeriodMs(20);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -60,7 +64,7 @@ public class Module {
 
         config.CurrentLimits.SupplyCurrentLimit = 20;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
-        
+
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -104,6 +108,15 @@ public class Module {
     public void stop() {
         drive.stopMotor();
         steer.stopMotor();
+    }
+
+    public double getCharacterizationVelocity() {
+        return inputs.driveVelocityRadsPerSec;
+    }
+
+    public void runCharacterization(double turnSetpointRads, double input) {
+        io.runTurnPositionSetpoint(turnSetpointRads);
+        io.runCharacterization(input);
     }
 
     public void set(double driveVolts, double targetAngle) {

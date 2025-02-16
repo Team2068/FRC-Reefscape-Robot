@@ -14,8 +14,6 @@ public class IO extends SubsystemBase {
         public final Elevator elevator = null;
         public final Hang hang = null;
 
-
-
         public CommandScheduler scheduler = CommandScheduler.getInstance();
 
         public IO() {
@@ -23,5 +21,6 @@ public class IO extends SubsystemBase {
         }
 
         @Override
-        public void periodic() {}
+        public void periodic() {
+        }
 }

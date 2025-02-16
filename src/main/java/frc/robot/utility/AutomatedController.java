@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.FeedForwardCharacterization;
 
 public class AutomatedController {
     public final CommandXboxController controller;
@@ -57,6 +58,7 @@ public class AutomatedController {
 
         // controller.y().and( automated() ).onTrue(Util.D      
         controller.povDown().and( manual() ).onTrue(Util.Do(io.chassis::toggle));
+        controller.a().onTrue(new FeedForwardCharacterization(io.chassis, io.chassis::runCharacterization, io.chassis::getCharacterizationVelocity));
         controller.povLeft().and( manual() ).onTrue(Util.Do(io.chassis::syncEncoders));
         controller.povRight().and( manual() ).and(() -> {return !io.chassis.active;}).onTrue(new InstantCommand(io.chassis::zeroAbsolute)); // Add the Rumble effect
 
